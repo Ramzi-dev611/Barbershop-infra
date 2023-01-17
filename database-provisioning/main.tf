@@ -1,31 +1,73 @@
-resource "azurerm_resource_group" "database-rg" {
-  name = "database_resource-group"
-  location = "France Central"
+data "terraform_remote_state" "aks" {
+  backend = "azurerm"
+
+  config = {
+    resource_group_name  = "terraform_backend_rg"
+    container_name       = "backend"
+    storage_account_name = "storebackend124"
+    key                  = "kubernetes-stack.json"
+  }
 }
 
-resource "azurerm_postgresql_server" "database-server" {
-  name                = "postgresql-server"
-  location            = azurerm_resource_group.database-rg.location
-  resource_group_name = azurerm_resource_group.database-rg.name
-
-  sku_name = "B_Gen5_2"
-
-  storage_mb                   = 5120
-  backup_retention_days        = 7
-  geo_redundant_backup_enabled = false
-  auto_grow_enabled            = true
-
-  administrator_login          = "barbershopDbUser"
-  administrator_login_password = "barbershopDbPasswd"
-  public_network_access_enabled = true
-  version                      = "9.5"
-  ssl_enforcement_enabled      = true
+resource "kubernetes_persistent_volume" "database_persistance_volume" {
+    metadata {
+      name = "dbpvc"
+    }
+    spec {
+        storage_class_name = "manual"
+        capacity = {
+            storage = "10Gi"
+        }
+        access_modes = ["ReadWriteMany"]
+        persistent_volume_source {
+             gce_persistent_disk {
+                pd_name = "test-123"
+            }
+        }
+    }
 }
 
-resource "azurerm_postgresql_database" "database" {
-  name                = "barbershopDB"
-  resource_group_name = azurerm_resource_group.database-rg.name
-  server_name         = azurerm_postgresql_server.database-server.name
-  charset             = "UTF8"
-  collation           = "English_United States.1252"
+resource "kubernetes_persistent_volume_claim" "database_volume_claim" {
+  metadata {
+    name = "dbvlaim"
+  }
+  spec {
+    storage_class_name = "manual"
+    access_modes = ["ReadWriteMany"]
+    resources {
+      requests = {
+        storage = "5Gi"
+      }
+    }
+    volume_name = kubernetes_persistent_volume.database_persistance_volume.metadata.0.name
+  }
+}
+
+resource "helm_release" "postgres_helm_release" {
+  name = "database"
+  repository = "https://charts.bitnami.com/bitnami"
+  chart = "postgresql"
+  set {
+    name = "persistence.existingClaim"
+    value = kubernetes_persistent_volume_claim.database_volume_claim.metadata.0.name
+  }
+
+  set {
+    name = "volumePermissions.enabled"
+    value = "true"
+  }
+
+  set {
+    name = "postgresqlUsername"
+    value = var.database_username
+  }
+  set {
+    name = "postgresqlPassword"
+    value = var.database_password
+  }
+
+  set {
+    name = "postgresqlDatabase"
+    value = var.database_name
+  }
 }
