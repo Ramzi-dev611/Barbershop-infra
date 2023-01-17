@@ -14,7 +14,7 @@ resource "kubernetes_namespace" "prometheus_namespace" {
     labels = {
       environment = "production"
     }
-    generate_name = "netrics-namespace-"
+    generate_name = "metrics-namespace-"
   }
 }
 
@@ -34,4 +34,34 @@ resource "helm_release" "grafana" {
     name = "ingress.enabled"
     value = true
   }
+}
+
+resource "helm_release" "datadog" {
+  name = "datadog"
+  repository = "https://helm.datadoghq.com"
+  chart = "datadog"
+
+  set {
+    name  = "datadog.apiKey"
+    value = var.datadog_api_key
+  }
+
+  set {
+    name  = "datadog.site"
+    value = var.datadog_site
+  }
+
+  set {
+    name  = "datadog.logs.enabled"
+    value = "true"
+  }
+  set {
+    name  = "datadog.kubelet.tlsVerify"
+    value = "false"
+  }
+  set {
+    name  = "datadog.logs.containerCollectAll"
+    value = "true"
+  }
+  
 }
