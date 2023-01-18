@@ -33,52 +33,52 @@ resource "helm_release" "application" {
     }
 
     set {
-      name = "authentication.deplyment.DB_HOST"
+      name = "authentication.deployment.DB_HOST"
       value = data.terraform_remote_state.db.outputs.database-service-name
     }
 
     set {
-      name = "authentication.deplyment.DB_PORT"
+      name = "authentication.deployment.DB_PORT"
       value = data.terraform_remote_state.db.outputs.database-port
     }
 
     set {
-      name = "authentication.deplyment.DB_NAME"
+      name = "authentication.deployment.DB_NAME"
       value = data.terraform_remote_state.db.outputs.database-name
     }
 
     set {
-      name = "authentication.deplyment.DB_USER"
+      name = "authentication.deployment.DB_USER"
       value = data.terraform_remote_state.db.outputs.database-username
     }
 
     set {
-      name = "authentication.deplyment.DB_PASSWD"
+      name = "authentication.deployment.DB_PASSWD"
       value = data.terraform_remote_state.db.outputs.database-password
     }
 
     set {
-      name = "posts.deplyment.DB_HOST"
+      name = "posts.deployment.DB_HOST"
       value = data.terraform_remote_state.db.outputs.database-service-name
     }
 
     set {
-      name = "posts.deplyment.DB_PORT"
+      name = "posts.deployment.DB_PORT"
       value = data.terraform_remote_state.db.outputs.database-port
     }
 
     set {
-      name = "posts.deplyment.DB_NAME"
+      name = "posts.deployment.DB_NAME"
       value = data.terraform_remote_state.db.outputs.database-name
     }
 
     set {
-      name = "posts.deplyment.DB_USER"
+      name = "posts.deployment.DB_USER"
       value = data.terraform_remote_state.db.outputs.database-username
     }
 
     set {
-      name = "posts.deplyment.DB_PASSWD"
+      name = "posts.deployment.DB_PASSWD"
       value = data.terraform_remote_state.db.outputs.database-password
     }
 
