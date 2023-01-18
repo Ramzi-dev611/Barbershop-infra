@@ -25,4 +25,4 @@ this repository contains the terraform micro-stacks for the provisioning of the 
 
 * Since no github secretes were used for the moment the user of this repository is requiered to specify terraform.tfvars file to set values in the last two stacks
 
-* Visit the code source of the application ![Readme file](https://github.com/Ramzi-dev611/barber-shop#readme) to get more details about the creation steps of the application and what's done and what is missing
+* Visit the code source of the application [Readme file](https://github.com/Ramzi-dev611/barber-shop#readme) to get more details about the creation steps of the application and what's done and what is missing
